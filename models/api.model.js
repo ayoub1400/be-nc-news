@@ -6,3 +6,7 @@ exports.readTopics = () => {
         return rows
     })
 }
+
+exports.readArticleById = () => {
+   
+}
