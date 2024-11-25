@@ -10,7 +10,7 @@ beforeEach(() => seed(data));
 afterAll(() => db.end());
 
 describe("GET /api", () => {
-  test("200: Responds with an object detailing the documentation for each endpoint", () => {
+  test("GET 200: Responds with an object detailing the documentation for each endpoint", () => {
     return request(app)
       .get("/api")
       .expect(200)
@@ -21,7 +21,7 @@ describe("GET /api", () => {
 });
 
 describe('GET /api/topics' , () => {
-  test('200: Responds with an object of all of the correct topics data' , () => {
+  test('GET 200: Responds with an object of all of the correct topics data' , () => {
       return request(app)
       .get('/api/topics')
       .expect(200)
@@ -38,7 +38,7 @@ describe('GET /api/topics' , () => {
 })
 
 describe('GET /api/articles/:article_id' , () => {
-  test('should give an correct object corresponding to the id given with a status code of 200' , () => {
+  test('GET 200: should give an correct object corresponding to the id given with a status code of 200' , () => {
       return request(app)
       .get('/api/articles/1')
       .expect(200)
@@ -59,12 +59,55 @@ describe('GET /api/articles/:article_id' , () => {
             )
       })
   })
-  test('should give an appropriate error message when given an invalid id', () => {
+    test('GET 404: should give an appropriate error message when given an invalid id', () => {
     return request(app)
     .get('/api/articles/100')
     .expect(404)
     .then(({ body }) => {
     expect(body.msg).toBe('100 is an invalid id')
+     })
+  })
+})
+
+describe('GET /api/articles' , () => {
+  test('GET 200: Responds with an object of all of the correct articles data ' , () => {
+      return request(app)
+      .get('/api/articles')
+      .expect(200)
+      .then(({ body }) => {
+          expect(body.articles.length).toBe(13)
+          body.articles.forEach((article) => {
+             expect(article).toMatchObject({
+              author: expect.any(String),
+              title: expect.any(String),
+              article_id: expect.any(Number),
+              topic: expect.any(String),
+              created_at: expect.any(String),
+              votes: expect.any(Number),
+              article_img_url: expect.any(String),
+              comment_count: expect.any(String),
+             }) 
+          })
+  }) 
+  })
+  test('GET 200: return the data sorted by the date', () => {
+    return request(app)
+    .get('/api/articles')
+    .expect(200)
+    .then(({ body }) => {
+        expect(body.articles).toHaveLength(13)
+        expect(body.articles).toBeSortedBy("created_at", {
+            descending: true, 
+            coerce: true,
+        })
+    })
+  })
+  test('GET 404: should give an appropriate error message when given an invalid endpoint', () => {
+    return request(app)
+    .get('/api/thisisnotanarticle')
+    .expect(404)
+    .then(({ body }) => {
+    expect(body.msg).toBe('Not Found')
      })
   })
 })
