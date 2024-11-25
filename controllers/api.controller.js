@@ -1,5 +1,5 @@
 const endpoints = require('../endpoints.json')
-const { readTopics, readArticleById } = require('../models/api.model')
+const { readTopics, readArticleById, readArticles } = require('../models/api.model')
 
 exports.getApi = (req, res) => {
     res.status(200).send({ endpoints })
@@ -18,6 +18,14 @@ exports.getArticlesById = (req, res, next) => {
     readArticleById(article_id)
     .then(( article ) => {
         res.status(200).send({ article })
+    })
+    .catch(next)
+}
+
+exports.getArticles = (req, res, next) => {
+    readArticles()
+    .then(( articles ) => {
+        res.status(200).send({ articles })
     })
     .catch(next)
 }
