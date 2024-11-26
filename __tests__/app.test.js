@@ -38,7 +38,7 @@ describe('GET /api/topics' , () => {
 })
 
 describe('GET /api/articles/:article_id' , () => {
-  test('GET 200: should give an correct object corresponding to the id given with a status code of 200' , () => {
+  test('GET 200: should give the correct object corresponding to the id given with a status code of 200' , () => {
       return request(app)
       .get('/api/articles/1')
       .expect(200)
@@ -65,6 +65,14 @@ describe('GET /api/articles/:article_id' , () => {
     .expect(404)
     .then(({ body }) => {
     expect(body.msg).toBe('100 is an invalid id')
+     })
+  })
+  test('GET 400: should give an appropriate error message when given an invalid id that is not a number', () => {
+    return request(app)
+    .get('/api/articles/notanid')
+    .expect(400)
+    .then(({ body }) => {
+    expect(body.msg).toBe('Bad Request')
      })
   })
 })
@@ -109,5 +117,55 @@ describe('GET /api/articles' , () => {
     .then(({ body }) => {
     expect(body.msg).toBe('Not Found')
      })
+  })
+})
+
+describe('GET /api/articles/:article_id/comments' , () => {
+  test('GET 200: Responds with an object of the correct topics data for the given article id' , () => {
+      return request(app)
+      .get('/api/articles/1/comments')
+      .expect(200)
+      .then(({ body }) => {
+          expect(body.comments).toHaveLength(11)
+          body.comments.forEach((comment) => {
+             expect(comment).toMatchObject({
+              comment_id: expect.any(Number),
+              votes: expect.any(Number),
+              created_at: expect.any(String),
+              author: expect.any(String),
+              body: expect.any(String),
+              article_id: expect.any(Number),
+             }) 
+          })
+    })
+  })
+  test('GET 200: return the data sorted by the date', () => {
+    return request(app)
+    .get('/api/articles/1/comments')
+    .expect(200)
+    .then(({ body }) => {
+      console.log(body.comments)
+        expect(body.comments).toHaveLength(11)
+        expect(body.comments).toBeSortedBy("created_at", {
+            ascending: true, 
+            coerce: true,
+        })
+    })
+  })
+  test('GET 404: should give an appropriate error message when given an invalid id', () => {
+  return request(app)
+  .get('/api/articles/100/comments')
+  .expect(404)
+  .then(({ body }) => {
+  expect(body.msg).toBe('There are no comments for this article')
+    })
+  })
+  test('GET 400: should give an appropriate error message when given an invalid id that is not a number', () => {
+  return request(app)
+  .get('/api/articles/notanid/comments')
+  .expect(400)
+  .then(({ body }) => {
+  expect(body.msg).toBe('Bad Request')
+    })
   })
 })
