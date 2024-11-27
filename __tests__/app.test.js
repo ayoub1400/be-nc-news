@@ -240,3 +240,19 @@ describe('/api/articles/:article_id/comments.', () => {
         })
     })
   })
+
+  describe("/api/comments/:comment_id", () => {
+    test("DELETE 204: should give the code and no body", () => {
+      return request(app)
+      .delete("/api/comments/1")
+      .expect(204)
+    })
+    test('GET 404: responds with an appropriate status and error message when given a non-existent id', () => {
+      return request(app)
+        .delete('/api/comments/100')
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Comment does not exist")
+        })
+    })
+  })
