@@ -1,4 +1,4 @@
-const db = require('../db/connection')
+const db = require('../db/connection');
 
 exports.readCommentsById = (articles_id) => {
     const text = `SELECT comment_id, votes, created_at,
@@ -16,4 +16,18 @@ exports.readCommentsById = (articles_id) => {
     return rows
     })
     
+}
+
+exports.insertComment = (article_id, username, body) => {
+  return db
+    .query(
+      `INSERT INTO comments (author, body, article_id)
+    VALUES ($1, $2, $3)
+    RETURNING *`,
+      [username, body, article_id]
+    )
+    .then(({ rows }) => {
+      console.log(rows)
+      return rows[0]
+    })
 }

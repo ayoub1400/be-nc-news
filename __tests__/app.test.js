@@ -9,7 +9,7 @@ const request = require('supertest')
 beforeEach(() => seed(data));
 afterAll(() => db.end());
 
-describe("GET /api", () => {
+describe("/api", () => {
   test("GET 200: Responds with an object detailing the documentation for each endpoint", () => {
     return request(app)
       .get("/api")
@@ -20,7 +20,7 @@ describe("GET /api", () => {
   });
 });
 
-describe('GET /api/topics' , () => {
+describe('/api/topics' , () => {
   test('GET 200: Responds with an object of all of the correct topics data' , () => {
       return request(app)
       .get('/api/topics')
@@ -37,7 +37,7 @@ describe('GET /api/topics' , () => {
 })
 })
 
-describe('GET /api/articles/:article_id' , () => {
+describe('/api/articles/:article_id' , () => {
   test('GET 200: should give the correct object corresponding to the id given with a status code of 200' , () => {
       return request(app)
       .get('/api/articles/1')
@@ -77,7 +77,7 @@ describe('GET /api/articles/:article_id' , () => {
   })
 })
 
-describe('GET /api/articles' , () => {
+describe('/api/articles' , () => {
   test('GET 200: Responds with an object of all of the correct articles data ' , () => {
       return request(app)
       .get('/api/articles')
@@ -120,7 +120,7 @@ describe('GET /api/articles' , () => {
   })
 })
 
-describe('GET /api/articles/:article_id/comments' , () => {
+describe('/api/articles/:article_id/comments' , () => {
   test('GET 200: Responds with an object of the correct topics data for the given article id' , () => {
       return request(app)
       .get('/api/articles/1/comments')
@@ -144,7 +144,6 @@ describe('GET /api/articles/:article_id/comments' , () => {
     .get('/api/articles/1/comments')
     .expect(200)
     .then(({ body }) => {
-      console.log(body.comments)
         expect(body.comments).toHaveLength(11)
         expect(body.comments).toBeSortedBy("created_at", {
             ascending: true, 
@@ -169,3 +168,45 @@ describe('GET /api/articles/:article_id/comments' , () => {
     })
   })
 })
+
+describe('/api/articles/:article_id/comments.', () => {
+  test('POST 201: Responds with an array of comments from the specified article', () => {
+
+    return request(app)
+      .post("/api/articles/1/comments")
+      .send({
+        username: "butter_bridge",
+        body: "invoke yourself like a function",
+      })
+      .expect(201)
+      .then(({ body }) => {
+        expect(body.comment).toMatchObject({
+          comment_id: expect.any(Number),
+          votes: expect.any(Number),
+          created_at: expect.any(String),
+          author: "butter_bridge",
+          body: "invoke yourself like a function",
+          article_id: 1,
+        });
+      })
+      
+    })
+    
+    test('GET 400: should give an appropriate error message when given an invalid article id', () => {
+      return request(app)
+      .get('/api/articles/notanid/comments')
+      .expect(400)
+      .then(({body}) => {
+          expect(body.msg).toBe('Bad Request')
+      })
+    })
+    test('GET 400: Responds with an bad request error message when an no comment is provided', () => {
+         return request(app)
+        .post("/api/articles/1/comments")
+        .send({username: "butter_bridge"})
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Bad Request");
+        })
+    });
+  })
