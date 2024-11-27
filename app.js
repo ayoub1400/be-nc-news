@@ -1,8 +1,8 @@
 const express = require('express')
 const { getApi, getTopics } = require('./controllers/topics.controller')
-const { customErrors } = require('./errors')
+const { customErrors, postgresErrors, endpointErrors } = require('./errors')
 const { getArticlesById, getArticles } = require('./controllers/articles.controller')
-const { getCommentsById } = require('./controllers/comments.controller')
+const { getCommentsById, postComment } = require('./controllers/comments.controller')
 const app = express()
 
 app.use(express.json())
@@ -17,10 +17,12 @@ app.get('/api/articles', getArticles)
 
 app.get('/api/articles/:article_id/comments', getCommentsById)
 
-app.all('*', (req, res) => {
-    res.status(404).send({ msg: 'Not Found' })
-  })
- 
+app.post('/api/articles/:article_id/comments', postComment)
+
+app.use(endpointErrors)
+
 app.use(customErrors)
+
+app.use(postgresErrors)
 
 module.exports = app
