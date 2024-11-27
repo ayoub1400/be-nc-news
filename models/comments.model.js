@@ -38,7 +38,7 @@ exports.checkCommentToDelete = (comment_id) => {
     [comment_id])
     .then(({ rows }) => {
       if (rows.length === 0) {
-        return Promise.reject({ status: 404, msg: "Comment does not exist" });
+        return Promise.reject({ status: 404, msg: "Comment does not exist" })
       }
-    });
+    })
 }
