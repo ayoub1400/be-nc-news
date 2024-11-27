@@ -208,5 +208,35 @@ describe('/api/articles/:article_id/comments.', () => {
         .then(({ body }) => {
           expect(body.msg).toBe("Bad Request");
         })
-    });
+    })
+  })
+
+  describe("/api/articles/:article_id.", () => {
+    test("PATCH 200: responds with the updated article when given the article_id and the amount to increment votes by", () => {
+      return request(app)
+        .patch("/api/articles/1")
+        .send( { inc_votes: 2 } )
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.article).toMatchObject({
+            author: expect.any(String),
+            title: expect.any(String),
+            article_id: 1,
+            body: expect.any(String),
+            topic: expect.any(String),
+            created_at: expect.any(String),
+            votes: 102,
+            article_img_url: expect.any(String),
+          })
+        })
+    })
+    test("GET 400: should give an appropriate error message to invalid inc_votes", () => {
+      return request(app)
+        .patch("/api/articles/2")
+        .send( { inc_votes: "hjghi" } )
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Bad Request")
+        })
+    })
   })

@@ -1,10 +1,7 @@
-const { readArticleById, readArticles } = require("../models/articles.model")
+const { readArticleById, readArticles, updateArticle } = require("../models/articles.model")
 
 exports.getArticlesById = (req, res, next) => {
     const { article_id } = req.params
-    if (isNaN(article_id)) {
-        return res.status(400).send({ msg: 'Bad Request' })
-      }
     readArticleById(article_id)
     .then(( article ) => {
         res.status(200).send({ article })
@@ -19,3 +16,13 @@ exports.getArticles = (req, res, next) => {
     })
     .catch(next)
 }
+
+exports.patchArticle = (req, res, next) => {
+    const { article_id } = req.params;
+    const { inc_votes } = req.body;
+    updateArticle(article_id, inc_votes)
+      .then((article) => {
+        res.status(200).send({ article });
+      })
+      .catch(next);
+  };
