@@ -256,3 +256,29 @@ describe('/api/articles/:article_id/comments.', () => {
         })
     })
   })
+
+  describe("GET /api/users", () => {
+    test("200: Responds with an array of user objects", () => {
+      return request(app)
+        .get("/api/users")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.users).toHaveLength(4)
+          body.users.forEach((user) => {
+            expect(user).toMatchObject({
+              username: expect.any(String),
+              name: expect.any(String),
+              avatar_url: expect.any(String),
+            })
+          })
+        })
+    })
+    test('GET 404: should give an appropriate error message when given an invalid endpoint', () => {
+      return request(app)
+      .get('/api/thisisnotanarticle')
+      .expect(404)
+      .then(({ body }) => {
+      expect(body.msg).toBe('Not Found')
+       })
+    })
+  })
