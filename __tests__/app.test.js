@@ -282,3 +282,18 @@ describe('/api/articles/:article_id/comments.', () => {
        })
     })
   })
+  
+  describe("/api/articles?sort_by=:column", () => {
+    test("GET 200: should gicve an array of all articles sorted by the query in this case article_id", () => {
+      return request(app)
+        .get("/api/articles?sort_by=article_id")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.articles).toHaveLength(13)
+          expect(body.articles).toBeSortedBy("article_id", 
+            { descending: true,
+            coerce: true
+           })
+        })
+    })
+  })
