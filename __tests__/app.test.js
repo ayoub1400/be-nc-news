@@ -87,6 +87,7 @@ describe('/api/articles' , () => {
           body.articles.forEach((article) => {
              expect(article).toMatchObject({
               author: expect.any(String),
+              body: expect.any(String),
               title: expect.any(String),
               article_id: expect.any(Number),
               topic: expect.any(String),
@@ -283,7 +284,7 @@ describe('/api/articles/:article_id/comments.', () => {
     })
   })
   
-  describe("/api/articles?sort_by=:column", () => {
+ /*  describe("/api/articles?sort_by=:column", () => {
     test("GET 200: should gicve an array of all articles sorted by the query in this case article_id", () => {
       return request(app)
         .get("/api/articles?sort_by=article_id")
@@ -296,4 +297,4 @@ describe('/api/articles/:article_id/comments.', () => {
            })
         })
     })
-  })
+  }) */

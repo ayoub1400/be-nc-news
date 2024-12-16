@@ -23,7 +23,7 @@ exports.readArticleById = (articles_id) => {
 exports.readArticles = () => {
     return db.query(`SELECT 
     articles.article_id, articles.title, articles.author,
-    articles.topic, articles.created_at, articles.votes,
+    articles.body, articles.topic, articles.created_at, articles.votes,
     articles.article_img_url,
     COUNT(comments.comment_id) AS comment_count
     FROM articles
