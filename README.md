@@ -47,6 +47,6 @@ You can also post a comment, patch a comment with a vote and delete a comment.
 
 ---
 
-This portfolio project was created as part of a Software Engineering provided by [Northcoders](https://northcoders.com/)
+This portfolio project was created as part of a Software Engineering Bootcamp provided by [Northcoders](https://northcoders.com/)
 
 
