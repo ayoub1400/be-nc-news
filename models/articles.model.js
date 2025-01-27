@@ -4,8 +4,12 @@ exports.readArticleById = (articles_id) => {
     const text = `SELECT articles.article_id,
         articles.title, articles.topic, articles.author,
         articles.body, articles.created_at, articles.votes,
-        articles.article_img_url FROM articles
-        WHERE articles.article_id = $1;`
+        articles.article_img_url,
+        COUNT(comments.comment_id) AS comment_count
+        FROM articles
+        LEFT JOIN comments ON comments.article_id = articles.article_id
+        WHERE articles.article_id = $1
+        GROUP BY articles.article_id;`
     const values = [articles_id];
     return db.query(text, values).then(({ rows }) => {
       const article = rows[0]
@@ -20,19 +24,42 @@ exports.readArticleById = (articles_id) => {
     
 }
 
-exports.readArticles = () => {
-    return db.query(`SELECT 
-    articles.article_id, articles.title, articles.author,
-    articles.body, articles.topic, articles.created_at, articles.votes,
-    articles.article_img_url,
-    COUNT(comments.comment_id) AS comment_count
-    FROM articles
-    LEFT JOIN comments ON comments.article_id = articles.article_id
-    GROUP BY articles.article_id
-    ORDER BY articles.created_at DESC`)
-    .then(({ rows }) => {
-        return rows
-    })
+exports.readArticles = (sort_by = 'created_at', order = 'desc', topic) => {
+  const validColumns = [
+      'article_id', 'title', 'author', 'body', 'topic', 'created_at', 'votes', 'comment_count'
+  ]
+  const validOrders = ['asc', 'desc']
+
+  if (!validColumns.includes(sort_by)) {
+      return Promise.reject({ status: 400, msg: 'Bad Request' })
+  }
+
+  if (!validOrders.includes(order)) {
+      return Promise.reject({ status: 400, msg: 'Bad Request' })
+  }
+
+  let queryStr = `
+      SELECT 
+      articles.article_id, articles.title, articles.author,
+      articles.body, articles.topic, articles.created_at, articles.votes,
+      articles.article_img_url,
+      COUNT(comments.comment_id) AS comment_count
+      FROM articles
+      LEFT JOIN comments ON comments.article_id = articles.article_id
+  `;
+
+  const queryParams = []
+  if (topic) {
+      queryStr += `WHERE articles.topic = $1 `;
+      queryParams.push(topic);
+  }
+
+  queryStr += `GROUP BY articles.article_id ORDER BY ${sort_by} ${order}`
+
+  return db.query(queryStr, queryParams)
+      .then(({ rows }) => {
+          return rows
+      })
 }
 
 exports.updateArticle = (article_id, inc_votes) => {
