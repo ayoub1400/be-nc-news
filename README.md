@@ -31,8 +31,8 @@ You can also post a comment, patch a comment with a vote and delete a comment.
 | .env.test        | PGDATABASE=nc_news_test |
 | .env.development | PGDATABASE=nc_news      |
 
-- Run npm i or npm install to intsall all necessary dependencies
-- Run npm setup-dbs fot the initial databse setup
+- Run npm i or npm install to install all necessary dependencies
+- Run npm setup-dbs for the initial databse setup
 - Run npm run seed to seed the databse
 - Run npm test app to run the tests
 
